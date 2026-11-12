@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111116"><title>Movie Roulette</title>
+<style>
+:root{color-scheme:dark;--bg:#101015;--panel:#191920;--panel2:#22222b;--line:#30303b;--muted:#a4a4b3;--text:#f5f5f7;--accent:#b7a1ff;--accent2:#8c70ec;--good:#8ed9ad;--warn:#ffd18a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#29213e 0,#101015 45%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);padding:10px 14px}button.primary{background:var(--accent2);border-color:var(--accent2);color:#fff;font-weight:700}button.ghost{background:transparent}button.danger{color:#ffaaaa;border-color:#633c46}button:disabled{opacity:.4;cursor:not-allowed}
+.wrap{max-width:1100px;margin:auto;padding:22px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#bba8ff,#7658d5);display:grid;place-items:center;font-size:22px}.brand h1{font-size:20px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.tabs{display:flex;gap:8px;margin-bottom:18px}.tab{flex:1;max-width:180px}.tab.active{background:#302849;border-color:#8066c9;color:#e8ddff}
+.panel{background:linear-gradient(180deg,#1b1b24,#17171e);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 12px 35px #0002}
+.hero{text-align:center;padding:30px 20px 24px}.eyebrow{color:var(--accent);font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:800}.hero h2{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:9px 0}.hero p{color:var(--muted);margin:0 auto 20px;max-width:520px}
+.picked{margin:20px auto 16px;max-width:580px;padding:22px;border:1px solid #51436e;border-radius:18px;background:linear-gradient(135deg,#302747,#1e1c29);display:none}.picked.show{display:block}.picked h3{font-size:clamp(23px,5vw,34px);margin:4px 0 8px}.pill{display:inline-block;padding:4px 9px;border:1px solid #51436e;border-radius:30px;color:#d6caff;font-size:12px;margin:3px}
+.actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.stat{background:#17171e;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.stat strong{display:block;font-size:22px}.stat span{font-size:11px;color:var(--muted)}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted)}input,select{width:100%;background:#111117;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}
+input[type=range]{padding:0;accent-color:var(--accent2)}.rangehead{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.sectionhead h2{font-size:20px;margin:0}.muted{color:var(--muted)}.small{font-size:12px}
+.searchrow{display:flex;gap:9px;margin-bottom:12px}.searchrow input{flex:1}
+.list{display:flex;flex-direction:column;gap:8px}.item{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);background:#17171e;border-radius:13px}.itemmain{flex:1;min-width:0}.itemname{font-weight:700;overflow-wrap:anywhere}.meta{font-size:12px;color:var(--muted);margin-top:3px}.status{font-size:11px;border-radius:20px;padding:4px 8px;white-space:nowrap}.status.yes{background:#1c3a2b;color:var(--good)}.status.no{background:#302b20;color:var(--warn)}.itembuttons{display:flex;gap:6px}.itembuttons button{padding:7px 9px;font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:28px}.hidden{display:none!important}
+.modalback{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}.modalback.open{display:flex}.modal{width:min(480px,100%);background:#1b1b24;border:1px solid var(--line);border-radius:18px;padding:20px;max-height:90vh;overflow:auto}.modal h3{margin:0 0 16px}.modalgrid{display:grid;gap:12px}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.notice{border:1px solid #51436e;background:#211d2d;color:#d8ccff;padding:11px 13px;border-radius:12px;font-size:12px;margin-top:12px}
+@media(max-width:680px){.wrap{padding:15px 12px 40px}.top{align-items:flex-start}.controls{grid-template-columns:1fr 1fr}.controls .field:first-child{grid-column:1/-1}.panel{padding:15px}.item{align-items:flex-start}.itembuttons{flex-direction:column}.stats{gap:7px}.stat{padding:9px 5px}.stat strong{font-size:19px}}
+</style></head>
+<body><div class="wrap">
+<header class="top"><div class="brand"><div class="logo">🎬</div><div><h1>Movie Roulette</h1><p>Your library. Your next watch.</p></div></div><div class="small muted" id="savedLabel">Saved on this device</div></header>
+<nav class="tabs"><button class="tab active" data-tab="roulette">🎲 Roulette</button><button class="tab" data-tab="library">▤ Library <span id="libCount"></span></button></nav>
+<section id="roulette">
+<div class="panel hero"><div class="eyebrow">The next pick is yours</div><h2>What are we watching?</h2><p>Mix unwatched picks with rewatches. No more resetting checkboxes to start a new cycle.</p>
+<div class="picked" id="picked"><div class="eyebrow">Your random pick</div><h3 id="pickName"></h3><div id="pickMeta"></div><div class="actions" style="margin-top:16px"><button class="primary" id="markWatched">✓ Mark watched</button><button id="pickAgain">Pick again</button></div></div>
+<div class="actions"><button class="primary" id="spin">🎲 Spin the roulette</button><button id="newOnly">Unwatched only</button><button id="rewatchOnly">Rewatches only</button></div>
+<div class="stats"><div class="stat"><strong id="totalStat">0</strong><span>IN LIBRARY</span></div><div class="stat"><strong id="unwatchedStat">0</strong><span>UNWATCHED</span></div><div class="stat"><strong id="watchedStat">0</strong><span>WATCHED</span></div></div>
+</div>
+<div class="panel"><div class="sectionhead"><h2>Roulette settings</h2><span class="small muted">Adjust anytime</span></div>
+<div class="controls">
+<div class="field"><div class="rangehead"><label>New movies vs rewatches</label><strong id="ratioText">60% new</strong></div><input id="ratio" type="range" min="0" max="100" step="5" value="60"></div>
+<div class="field"><label>Category</label><select id="rouletteCategory"><option value="">All categories</option></select></div>
+<div class="field"><label>Where to watch</label><select id="rouletteSite"><option value="">All sites</option></select></div>
+</div><div class="notice">The roulette chooses from your current library. Adding, editing or deleting entries updates the picks automatically.</div></div>
+</section>
+<section id="library" class="hidden">
+<div class="panel"><div class="sectionhead"><div><h2>Your library</h2><div class="small muted" id="librarySub">Manage your collection</div></div><button class="primary" id="addBtn">＋ Add</button></div>
+<div class="searchrow"><input id="search" placeholder="Search titles, categories or sites…"><button id="exportBtn">Export</button></div>
+<div class="controls" style="margin-bottom:14px">
+<div class="field"><label>Category</label><select id="filterCategory"><option value="">All categories</option></select></div>
+<div class="field"><label>Where to watch</label><select id="filterSite"><option value="">All sites</option></select></div>
+<div class="field"><label>Watched status</label><select id="filterStatus"><option value="">All</option><option value="no">Unwatched</option><option value="yes">Watched</option></select></div>
+</div><div class="list" id="movieList"></div><div class="empty hidden" id="emptyList">Your library is empty. Import your private list using the Data & backup section below.</div>
+</div>
+<div class="panel"><div class="sectionhead"><h2>Data & backup</h2></div><p class="small muted">Your changes are saved in this browser when storage is available. If opened in a restricted preview, changes stay in this session only — use Download JSON backup.</p><div class="actions" style="justify-content:flex-start"><button id="importListBtn">Import my 315 entries</button><button id="backupBtn">Download JSON backup</button><button id="restoreBtn">Restore JSON backup</button><input class="hidden" type="file" id="restoreFile" accept=".json,application/json"></div></div>
+</section></div>
+<div class="modalback" id="modalBack"><div class="modal"><h3 id="modalTitle">Add entry</h3><div class="modalgrid">
+<div class="field"><label>Movie / entry name</label><input id="fName" maxlength="180" placeholder="Name"></div>
+<div class="field"><label>Where to watch</label><input id="fSite" maxlength="100" placeholder="Platform or website"></div>
+<div class="field"><label>Category</label><input id="fCategory" maxlength="100" placeholder="Category"></div>
+<div class="field"><label>Personal rating (optional)</label><input id="fRating" type="number" min="0" max="10" step=".5" placeholder="0–10"></div>
+<label class="small"><input id="fWatched" type="checkbox" style="width:auto;margin-right:7px">Already watched</label>
+</div><div class="modalfoot"><button class="ghost" id="cancelModal">Cancel</button><button class="primary" id="saveEntry">Save entry</button></div></div></div>
+<script>
+const initialData = []
+const KEY='movieRouletteLibrary_v1';
+let movies=[], editingId=null, currentPick=null;
+const $=id=>document.getElementById(id);
+let storageAvailable=true;
+function safeGet(){try{return window.localStorage.getItem(KEY)}catch(e){storageAvailable=false;return null}}
+function safeSet(value){try{window.localStorage.setItem(KEY,value);storageAvailable=true;return true}catch(e){storageAvailable=false;return false}}
+function load(){try{const raw=safeGet();movies=raw?JSON.parse(raw):initialData.map(x=>({...x}));}catch(e){movies=initialData.map(x=>({...x}));}render();updateSaveLabel();}
+function save(){const ok=safeSet(JSON.stringify(movies));updateSaveLabel(ok);render();}
+function updateSaveLabel(ok=storageAvailable){$('savedLabel').textContent=ok?'Saved on this device':'Temporary session — export a backup';}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function unique(key){return [...new Set(movies.map(m=>m[key]).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b)))}
+function fillSelect(id,values,first){const el=$(id),old=el.value;el.innerHTML=`<option value="">${first}</option>`+values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(values.includes(old))el.value=old;}
+function render(){
+ $('libCount').textContent=`(${movies.length})`;
+ $('totalStat').textContent=movies.length;
+ $('unwatchedStat').textContent=movies.filter(m=>!m.watched).length;
+ $('watchedStat').textContent=movies.filter(m=>m.watched).length;
+ ['rouletteCategory','filterCategory'].forEach(id=>fillSelect(id,unique('category'),'All categories'));
+ ['rouletteSite','filterSite'].forEach(id=>fillSelect(id,unique('site'),'All sites'));
+ $('librarySub').textContent=`${movies.length} entries · ${movies.filter(m=>m.watched).length} watched`;
+ const q=$('search').value.toLowerCase(),cat=$('filterCategory').value,site=$('filterSite').value,status=$('filterStatus').value;
+ const filtered=movies.filter(m=>(!q||[m.name,m.category,m.site].join(' ').toLowerCase().includes(q))&&(!cat||m.category===cat)&&(!site||m.site===site)&&(!status||(status==='yes'&&m.watched)||(status==='no'&&!m.watched))).sort((a,b)=>a.name.localeCompare(b.name));
+ $('movieList').innerHTML=filtered.map(m=>`<div class="item"><div class="itemmain"><div class="itemname">${esc(m.name)}</div><div class="meta">${esc(m.category||'Uncategorised')} · ${esc(m.site||'No site')}${m.rating!==''&&m.rating!=null?' · ★ '+esc(m.rating)+'/10':''}</div></div><span class="status ${m.watched?'yes':'no'}">${m.watched?'Watched':'Unwatched'}</span><div class="itembuttons"><button data-action="toggle" data-id="${m.id}">${m.watched?'Undo':'✓'}</button><button data-action="edit" data-id="${m.id}">Edit</button><button class="danger" data-action="delete" data-id="${m.id}">×</button></div></div>`).join('');
+ $('emptyList').classList.toggle('hidden',filtered.length!==0);
+}
+function eligible(mode='mix'){
+ const cat=$('rouletteCategory').value,site=$('rouletteSite').value;
+ let pool=movies.filter(m=>(!cat||m.category===cat)&&(!site||m.site===site));
+ if(mode==='new')pool=pool.filter(m=>!m.watched);
+ if(mode==='rewatch')pool=pool.filter(m=>m.watched);
+ if(mode==='mix'){
+  const fresh=pool.filter(m=>!m.watched),rewatch=pool.filter(m=>m.watched);
+  const ratio=Number($('ratio').value);
+  if(!fresh.length)return rewatch;
+  if(!rewatch.length)return fresh;
+  return Math.random()*100<ratio?fresh:rewatch;
+ }
+ return pool;
+}
+function pick(mode='mix'){
+ const pool=eligible(mode);
+ if(!pool.length){$('picked').classList.remove('show');alert('No entries match those filters. Try another category or site.');return;}
+ currentPick=pool[Math.floor(Math.random()*pool.length)];
+ $('pickName').textContent=currentPick.name;
+ $('pickMeta').innerHTML=[currentPick.category,currentPick.site,currentPick.watched?'Previously watched':'Not watched yet'].filter(Boolean).map(v=>`<span class="pill">${esc(v)}</span>`).join('');
+ $('picked').classList.add('show');
+ $('markWatched').textContent=currentPick.watched?'✓ Watched — pick another':'✓ Mark watched';
+ $('markWatched').disabled=!!currentPick.watched;
+}
+function openModal(m=null){editingId=m?.id??null;$('modalTitle').textContent=m?'Edit entry':'Add entry';$('fName').value=m?.name||'';$('fSite').value=m?.site||'';$('fCategory').value=m?.category||'';$('fRating').value=m?.rating??'';$('fWatched').checked=!!m?.watched;$('modalBack').classList.add('open');}
+function closeModal(){$('modalBack').classList.remove('open')}
+function saveModal(){const name=$('fName').value.trim();if(!name){alert('Please enter a name.');return;}const rating=$('fRating').value;const patch={name,site:$('fSite').value.trim(),category:$('fCategory').value.trim(),rating:rating===''?'':Number(rating),watched:$('fWatched').checked};if(editingId!==null){const i=movies.findIndex(m=>String(m.id)===String(editingId));if(i>=0){const old=movies[i];movies[i]={...old,...patch,watchCount:patch.watched?(old.watched?old.watchCount||1:(old.watchCount||0)+1):(old.watchCount||0),lastWatched:patch.watched?(old.lastWatched||new Date().toISOString().slice(0,10)):''};}}else{movies.unshift({id:uid(),...patch,watchCount:patch.watched?1:0,lastWatched:patch.watched?new Date().toISOString().slice(0,10):''});}closeModal();save();}
+function markPicked(){if(!currentPick)return;const m=movies.find(x=>String(x.id)===String(currentPick.id));if(!m)return;m.watched=true;m.watchCount=(m.watchCount||0)+1;m.lastWatched=new Date().toISOString().slice(0,10);save();pick('mix');}
+function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
+function exportCSV(){const cols=['name','site','category','watched','rating','lastWatched','watchCount'];const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';download('movie-roulette-export.csv',[cols.join(','),...movies.map(m=>cols.map(k=>q(m[k])).join(','))].join('\\n'),'text/csv');}
+$('spin').onclick=()=>pick('mix');$('newOnly').onclick=()=>pick('new');$('rewatchOnly').onclick=()=>pick('rewatch');$('pickAgain').onclick=()=>pick('mix');$('markWatched').onclick=markPicked;
+$('ratio').oninput=()=>{$('ratioText').textContent=$('ratio').value+'% new';};
+$('addBtn').onclick=()=>openModal();$('cancelModal').onclick=closeModal;$('saveEntry').onclick=saveModal;
+$('movieList').onclick=e=>{const b=e.target.closest('button[data-action]');if(!b)return;const m=movies.find(x=>String(x.id)===b.dataset.id);if(!m)return;const a=b.dataset.action;if(a==='edit')openModal(m);if(a==='toggle'){m.watched=!m.watched;if(m.watched){m.watchCount=(m.watchCount||0)+1;m.lastWatched=new Date().toISOString().slice(0,10);}save();}if(a==='delete'&&confirm(`Delete "${m.name}" from your library?`)){movies=movies.filter(x=>String(x.id)!==b.dataset.id);save();}};
+['search','filterCategory','filterSite','filterStatus'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));$('roulette').classList.toggle('hidden',b.dataset.tab!=='roulette');$('library').classList.toggle('hidden',b.dataset.tab!=='library');});
+$('exportBtn').onclick=exportCSV;
+$('backupBtn').onclick=()=>download('movie-roulette-backup.json',JSON.stringify(movies,null,2),'application/json');
+$('restoreBtn').onclick=()=>$('restoreFile').click();$('importListBtn').onclick=()=>$('restoreFile').click();
+$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const arr=JSON.parse(await f.text());if(!Array.isArray(arr))throw new Error('Invalid data');if(!confirm('Replace your current library with the selected list/backup?'))return;movies=arr.map((m,i)=>({id:m.id??uid(),name:m.name??m['NAME/TAG']??'',site:m.site??m['BEST SITE']??'',category:m.category??m.ref??'',watched:!!(m.watched??m.cycle),rating:m.rating??'',lastWatched:m.lastWatched??'',watchCount:m.watchCount??((m.watched??m.cycle)?1:0)})).filter(m=>m.name);save();alert('List imported.');}catch(err){alert('That JSON file could not be imported.');}e.target.value='';};
+load();$('ratioText').textContent='60% new';
+</script></body></html>
